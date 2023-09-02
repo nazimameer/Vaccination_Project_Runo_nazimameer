@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import Users from "../models/userModel";
+import Users from "../../models/userModel";
 
-const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: Request, res: Response) => {
   try {
     // Extract the required fields from the request body
     const { name, phoneNumber, age, pincode, aadharNo, password } = req.body;
@@ -34,8 +34,4 @@ const registerUser = async (req: Request, res: Response) => {
     console.log(error);
     res.status(500).json({ message: "Error registering user" });
   }
-};
-
-module.exports = {
-  registerUser,
 };
