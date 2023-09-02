@@ -3,9 +3,9 @@ const cors = require('cors');
 const http = require('http');
 const { dbconnect } = require('./src/config/config') 
 const app = express();
+require('dotenv').config();
 app.use(cors())
 const server = http.createServer(app);
-require('dotenv').config();
 
 
 
