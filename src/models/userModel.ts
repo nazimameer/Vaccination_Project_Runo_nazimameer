@@ -6,7 +6,7 @@ interface ISlot {
   status: string;
 }
 
-interface IUser extends Document {
+export interface IUser extends Document {
   name: String;
   phoneNumber: string;
   age: number;
