@@ -1,15 +1,20 @@
 import { Request, Response } from "express";
 import VaccineSlotModel from "../../models/vaccineSlotModel";
+import Users from "../../models/userModel";
 
 export const getAvailableSlot = async (req: Request, res: Response) => {
   try {
-    const { date, vaccinationStatus } = req.query;
-    // Ensure date and vaccinationStatus are provided in the request
-    if (!date || !vaccinationStatus) {
-      return res
-        .status(400)
-        .json({ message: "Date and vaccinationStatus are required" });
-    }
+    const { date } = req.query;
+    // Ensure date is provided in the request
+    if (!date) {
+        return res
+          .status(400)
+          .json({ message: "Date is required" });
+      }
+    const phoneNumber: any = req.user?.phoneNumber;
+    const user = await Users.findOne({phoneNumber});
+    const vaccinationStatus = user?.vaccinationStatus;
+   
 
     // Query the VaccineSlotModel to find available slots
     const availableSlots = await VaccineSlotModel.find({
