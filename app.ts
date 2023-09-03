@@ -1,15 +1,24 @@
-const express  = require('express');
-const cors = require('cors');
-const http = require('http');
-const { dbconnect } = require('./src/config/config') 
+import express from 'express';
+import cors from 'cors';
+import http from 'http';
+import { dbconnect } from './src/config/config';
+import dotenv from 'dotenv';
+dotenv.config();
+
 const app = express();
-require('dotenv').config();
-app.use(cors())
+app.use(cors());
+app.use(express.json());
+
 const server = http.createServer(app);
 
+const userRoutes = require('./src/routes/userRoutes');
 
+app.use(userRoutes);
 
+dbconnect();
 
-dbconnect()
-const port = 8000;
-server.listen(port, () => `Server running on port: ${port}`)
+const port = process.env.PORT || 8000;
+
+server.listen(port, () => {
+  console.log(`Server running on port: ${port}`);
+});
