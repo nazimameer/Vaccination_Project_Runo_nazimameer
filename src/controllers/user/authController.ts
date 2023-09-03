@@ -28,6 +28,7 @@ export const loginUser = async (req: Request, res: Response) => {
       const payload = {
         userId: user._id,
         phoneNumber: user.phoneNumber,
+        role:"user"
       };
 
       // Set the token expiration time
