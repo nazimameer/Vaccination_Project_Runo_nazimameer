@@ -1,6 +1,6 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 
-interface IVaccineSlot extends Document {
+export interface IVaccineSlot extends Document {
   date: Date;
   dose: string;
   timeSlot: string;
