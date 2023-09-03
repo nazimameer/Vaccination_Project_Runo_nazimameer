@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import VaccineSlotModel from "../../models/vaccineSlotModel";
+import VaccineSlotModel, { IVaccineSlot } from "../../models/vaccineSlotModel";
 import Users from "../../models/userModel";
 
 export const getAvailableSlot = async (req: Request, res: Response) => {
@@ -23,8 +23,17 @@ export const getAvailableSlot = async (req: Request, res: Response) => {
         doseNeed = "completed";
     }
 
-    async function getVaccineSlot(date: Date, dose: string) {
-        
+    async function getVaccineSlot(date: Date, dose: string): Promise<IVaccineSlot[] | null> {
+        try {
+            const user: IUser | null = await Users.findOne({ phoneNumber });
+            if (user) {
+              return user.vaccinationStatus;
+            } else {
+              return null; // User not found
+            }
+          } catch (error) {
+            throw error;
+          }
     }
 
     if(doseNeed !== "completed"){
