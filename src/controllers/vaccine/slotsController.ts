@@ -12,9 +12,24 @@ export const getAvailableSlot = async (req: Request, res: Response) => {
           .json({ message: "Date is required" });
       }
     const phoneNumber: any = req.user?.phoneNumber;
-    const user = await Users.findOne({phoneNumber});
+    const user  = await Users.findOne({phoneNumber});
     const vaccinationStatus = user?.vaccinationStatus;
-   
+    let doseNeed;
+    if(!vaccinationStatus){
+        doseNeed = 'first-dose';
+    }else if(vaccinationStatus == "first-dose"){
+        doseNeed = 'second-dose';
+    }else if(vaccinationStatus == "second-dose"){
+        doseNeed = "completed";
+    }
+
+    async function getVaccineSlot(date: Date, dose: string) {
+        
+    }
+
+    if(doseNeed !== "completed"){
+        
+    }
 
     // Query the VaccineSlotModel to find available slots
     const availableSlots = await VaccineSlotModel.find({
