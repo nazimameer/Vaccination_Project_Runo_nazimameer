@@ -1,25 +1,82 @@
 import { Request, Response } from "express";
-import VaccineSlotModel from "../../models/vaccineSlotModel";
+import VaccineSlotModel, { IVaccineSlot } from "../../models/vaccineSlotModel";
+import Users, { IUser } from "../../models/userModel";
+
+// Define constants for dose statuses to improve code readability
+const DOSE_STATUS = {
+  FIRST_DOSE: "first-dose",
+  SECOND_DOSE: "second-dose",
+  COMPLETED: "completed",
+};
+
+// Helper function to handle errors and send responses
+const handleError = (res: Response, statusCode: number, message: string) => {
+  console.error(message);
+  return res.status(statusCode).json({ message });
+};
 
 export const getAvailableSlot = async (req: Request, res: Response) => {
   try {
-    const { date, vaccinationStatus } = req.query;
-    // Ensure date and vaccinationStatus are provided in the request
-    if (!date || !vaccinationStatus) {
-      return res
-        .status(400)
-        .json({ message: "Date and vaccinationStatus are required" });
+    const { date } = req.query;
+    // Ensure date is provided in the request
+    if (!date || typeof date !== "string") {
+      return handleError(res, 400, "Date is required");
+    }
+    const parsedDate = new Date(date);
+    const phoneNumber: any = req.user?.phoneNumber;
+
+    // Find the user based on the phone number
+    const user = await Users.findOne({ phoneNumber });
+    if (!user) {
+      return handleError(res, 404, "User not found");
+    }
+    const vaccinationStatus = user?.vaccinationStatus;
+
+    // Determine the dose needed based on the vaccination status
+    let doseNeed: string = "";
+    switch (vaccinationStatus) {
+      case DOSE_STATUS.FIRST_DOSE:
+        doseNeed = DOSE_STATUS.SECOND_DOSE;
+        break;
+      case DOSE_STATUS.SECOND_DOSE:
+        doseNeed = DOSE_STATUS.COMPLETED;
+        break;
+      default:
+        doseNeed = DOSE_STATUS.FIRST_DOSE;
+        break;
     }
 
-    // Query the VaccineSlotModel to find available slots
-    const availableSlots = await VaccineSlotModel.find({
-      date, // Match the requested date
-      status: "available", // You can adjust this based on your slot status logic
-    });
+    if (doseNeed === DOSE_STATUS.COMPLETED) {
+      return handleError(
+        res,
+        400,
+        "Your two doses of vaccination are completed"
+      );
+    }
 
-    return res.status(200).json({ availableSlots });
+    // Helper function to get vaccine slots
+    async function getVaccineSlot(
+      date: Date,
+      dose: string
+    ): Promise<IVaccineSlot[]> {
+      try {
+        const vaccineSlots: IVaccineSlot[] = await VaccineSlotModel.find({
+          date,
+          dose,
+        });
+        return vaccineSlots;
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    const slotAvailable = await getVaccineSlot(parsedDate, doseNeed);
+    if (slotAvailable.length === 0) {
+      return handleError(res, 200, "No available slots for this date and dose");
+    }
+    return res.status(200).json({ slotAvailable });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Internal server error"});
+    return handleError(res, 500, "Internal server error");
   }
 };
