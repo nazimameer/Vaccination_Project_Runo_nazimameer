@@ -30,6 +30,7 @@ const userSchema = new Schema<IUser>({
       date: Date,
       timeSlot: String,
       status: String,
+      ref:'VaccineSlot'
     },
   ],
 });
