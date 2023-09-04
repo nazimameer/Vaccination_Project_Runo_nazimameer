@@ -20,6 +20,15 @@ export const regVaccineSlot = async (req: Request, res: Response) => {
         .json({ message: `You already completed the ${doseType}` });
     }
 
+async function checkAvailableSlot(date: Date, time: string): Promise<boolean> {
+    try {
+        const vaccineSlot: IVaccineSlot | null = await VaccineSlotModel.findOne({ date }).exec();
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
     const slotDetails = {
       phoneNumber: phoneNumber || "",
       date: new Date(date), // Replace with the actual date
