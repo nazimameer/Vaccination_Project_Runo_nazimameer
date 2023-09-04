@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import Users from "../../models/userModel";
-import regSlotModel, { IRegSlot } from "../../models/regSloteModel";
 import VaccineSlotModel, {
   ITimeSlot,
   IVaccineSlot,
+  RegisteredUser
 } from "../../models/vaccineSlotModel";
 
 export const regVaccineSlot = async (req: Request, res: Response) => {
@@ -61,16 +61,22 @@ export const regVaccineSlot = async (req: Request, res: Response) => {
       time: timeSlot, // Replace with the actual time slot
       dose: doseType, // Replace with the dose information
     };
-    const slotDetails2 = {
+    const slotDetails2  = {
       date: new Date(date),
       dose: doseType,
       timeSlot: timeSlot,
-      status: "Pending",
     };
 
     // Create a new vaccine slot document
-    const newSlot = new regSlotModel(slotDetails);
-    await newSlot.save();
+     await VaccineSlotModel.findOneAndUpdate(
+        {
+            date: new Date(date), // Match the date
+            "slots.time": timeSlot, // Match the time inside the slots array
+          },
+          {
+            $push: { "slots.$.registered_users": slotDetails }, // Push the data into the matched time slot
+          },
+    );
     await Users.findByIdAndUpdate(
       phoneNumber,
       {
