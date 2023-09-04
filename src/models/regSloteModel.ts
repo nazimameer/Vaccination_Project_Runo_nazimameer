@@ -13,7 +13,10 @@ const regSlotSchema = new Schema<IRegSlot>({
     date: Date,
     dose: String,
     timeSlot: String,
-    isAvailable: Boolean,
+    isAvailable: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 
