@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import Users from "../../models/userModel";
 import regSlotModel, { IRegSlot } from "../../models/regSloteModel";
+import VaccineSlotModel, {
+  ITimeSlot,
+  IVaccineSlot,
+} from "../../models/vaccineSlotModel";
 
 export const regVaccineSlot = async (req: Request, res: Response) => {
   try {
@@ -19,21 +23,43 @@ export const regVaccineSlot = async (req: Request, res: Response) => {
         .status(400)
         .json({ message: `You already completed the ${doseType}` });
     }
-
-async function checkAvailableSlot(date: Date, time: string): Promise<boolean> {
-    try {
-        const vaccineSlot: IVaccineSlot | null = await VaccineSlotModel.findOne({ date }).exec();
-    } catch (error) {
+    // Define a function to check available doses for a specific date and time
+    async function checkAvailableSlot(
+      date: Date,
+      time: string
+    ): Promise<boolean> {
+      try {
+        const vaccineSlot: IVaccineSlot | null = await VaccineSlotModel.findOne(
+          { date }
+        ).exec();
+        if (vaccineSlot) {
+          // Find the corresponding time slot
+          const timeSlot: ITimeSlot | undefined = vaccineSlot.slots.find(
+            (slot) => slot.time === time
+          );
+          if (timeSlot && timeSlot.available_doses > 0) {
+            // Available doses are greater than 0
+            return true;
+          }
+        }
+        // Either no matching slot found or available_doses <= 0
+        return false;
+      } catch (error) {
         console.log(error);
         return false;
+      }
     }
-}
+
+    const doseAvailable = await checkAvailableSlot(date, timeSlot);
+
+    if(!doseAvailable){
+        return res.status(404).json({ message: "Sorry no dose available"});
+    }
 
     const slotDetails = {
       phoneNumber: phoneNumber || "",
-      date: new Date(date), // Replace with the actual date
+      time: timeSlot, // Replace with the actual time slot
       dose: doseType, // Replace with the dose information
-      timeSlot: timeSlot, // Replace with the actual time slot
     };
     const slotDetails2 = {
       date: new Date(date),
