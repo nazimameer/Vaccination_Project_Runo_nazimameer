@@ -1,7 +1,4 @@
-const adminRoutes = require('./adminRoutes');
-const userRoutes = require('./userRoutes');
+const adminRoutes = require("./adminRoutes");
+const userRoutes = require("./userRoutes");
 
-export {
-    adminRoutes,
-    userRoutes
-}
+export { adminRoutes, userRoutes };

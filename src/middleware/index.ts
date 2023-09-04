@@ -1,7 +1,4 @@
-import { verifyAuth } from './authMiddleware';
-import { requireAdmin } from './authorizeMiddleware';
+import { verifyAuth } from "./authMiddleware";
+import { requireAdmin } from "./authorizeMiddleware";
 
-export {
-    verifyAuth,
-    requireAdmin
-}
+export { verifyAuth, requireAdmin };

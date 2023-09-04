@@ -23,7 +23,7 @@ export const getAvailableSlot = async (req: Request, res: Response) => {
     if (!date || typeof date !== "string") {
       return handleError(res, 400, "Date is required");
     }
-    const parsedDate = `${date}T00:00:00Z`
+    const parsedDate = `${date}T00:00:00Z`;
     const phoneNumber: any = req.user?.phoneNumber;
 
     // Find the user based on the phone number

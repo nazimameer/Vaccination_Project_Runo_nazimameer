@@ -1,8 +1,8 @@
-import express from 'express';
-import cors from 'cors';
-import http from 'http';
-import { dbconnect } from './src/config/config';
-import dotenv from 'dotenv';
+import express from "express";
+import cors from "cors";
+import http from "http";
+import { dbconnect } from "./src/config/config";
+import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const server = http.createServer(app);
 
-const userRoutes = require('./src/routes/userRoutes');
+const userRoutes = require("./src/routes/userRoutes");
 
 app.use(userRoutes);
 

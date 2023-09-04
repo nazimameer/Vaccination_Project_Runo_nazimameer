@@ -6,6 +6,64 @@ import VaccineSlotModel, {
 import Users from "../../models/userModel";
 import mongoose from "mongoose";
 
+async function checkAvailableSlot(
+  date: string,
+  time: string
+): Promise<boolean> {
+  try {
+    const vaccineSlot: IVaccineSlot | null = await VaccineSlotModel.findOne({
+      date,
+    }).exec();
+    if (vaccineSlot) {
+      // Find the corresponding time slot
+      const timeSlot: ITimeSlot | undefined = vaccineSlot.slots.find(
+        (slot) => slot.time === time
+      );
+
+      if (timeSlot && timeSlot.available_doses > 0) {
+        // Available doses are greater than 0
+        return true;
+      }
+    }
+    // Either no matching slot found or available_doses <= 0
+    return false;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+
+async function updateRegisteredUserTime(
+  date: string,
+  phoneNumber: string,
+  newTime: string
+): Promise<void> {
+  try {
+    // Find the document by date
+    const vaccineSlot = await VaccineSlotModel.findOne({ date });
+
+    if (vaccineSlot) {
+      // Find the subdocument by phoneNumber within the slots array
+      for (const timeSlot of vaccineSlot.slots) {
+        const registeredUser = timeSlot.registered_users.find(
+          (user) => user.phoneNumber === phoneNumber
+        );
+
+        if (registeredUser) {
+          // Update the time for the found subdocument
+          registeredUser.time = newTime;
+
+          // Save the changes
+          await vaccineSlot.save();
+          return;
+        }
+      }
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
 export const updateVaccineSlot = async (req: Request, res: Response) => {
   try {
     const { slotId, newTimeSlot } = req.body;
@@ -65,64 +123,6 @@ export const updateVaccineSlot = async (req: Request, res: Response) => {
     }
 
     // Check if new time slot is available or not
-
-    async function checkAvailableSlot(
-      date: string,
-      time: string
-    ): Promise<boolean> {
-      try {
-        const vaccineSlot: IVaccineSlot | null = await VaccineSlotModel.findOne(
-          { date }
-        ).exec();
-        if (vaccineSlot) {
-          // Find the corresponding time slot
-          const timeSlot: ITimeSlot | undefined = vaccineSlot.slots.find(
-            (slot) => slot.time === time
-          );
-
-          if (timeSlot && timeSlot.available_doses > 0) {
-            // Available doses are greater than 0
-            return true;
-          }
-        }
-        // Either no matching slot found or available_doses <= 0
-        return false;
-      } catch (error) {
-        console.log(error);
-        return false;
-      }
-    }
-
-    async function updateRegisteredUserTime(
-      date: string,
-      phoneNumber: string,
-      newTime: string
-    ): Promise<void> {
-      try {
-        // Find the document by date
-        const vaccineSlot = await VaccineSlotModel.findOne({ date });
-
-        if (vaccineSlot) {
-          // Find the subdocument by phoneNumber within the slots array
-          for (const timeSlot of vaccineSlot.slots) {
-            const registeredUser = timeSlot.registered_users.find(
-              (user) => user.phoneNumber === phoneNumber
-            );
-
-            if (registeredUser) {
-              // Update the time for the found subdocument
-              registeredUser.time = newTime;
-
-              // Save the changes
-              await vaccineSlot.save();
-              return;
-            }
-          }
-        }
-      } catch (error) {
-        throw error;
-      }
-    }
 
     const slotIsAvailable = await checkAvailableSlot(parsedDate, newTimeSlot);
 

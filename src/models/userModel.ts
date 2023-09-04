@@ -40,8 +40,8 @@ const userSchema = new Schema<IUser>({
   aadharNo: Number,
   password: String,
   vaccinationStatus: {
-    type:String,
-    default:""
+    type: String,
+    default: "",
   },
   registeredSlot: [slotSchema],
 });

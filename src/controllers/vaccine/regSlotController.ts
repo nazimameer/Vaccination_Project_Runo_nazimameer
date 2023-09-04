@@ -9,10 +9,10 @@ export const regVaccineSlot = async (req: Request, res: Response) => {
   try {
     const { date, timeSlot, doseType } = req.body;
     const phoneNumber = req.user?.phoneNumber;
-    const parsedDate = `${date}T00:00:00Z`
+    const parsedDate = `${date}T00:00:00Z`;
     // Ensure all required data is provided in the request body
-    console.log(date+" "+timeSlot+" "+doseType);
-    
+    console.log(date + " " + timeSlot + " " + doseType);
+
     if (!date || !timeSlot || !doseType) {
       return res.status(400).json({ message: "Incomplete data" });
     }
@@ -24,11 +24,9 @@ export const regVaccineSlot = async (req: Request, res: Response) => {
         .status(400)
         .json({ message: `You already completed all vaccination` });
     } else if (user?.vaccinationStatus === "" && doseType === "second-dose") {
-      return res
-        .status(400)
-        .json({
-          message: "You need to taken the first-dose before second-dose",
-        });
+      return res.status(400).json({
+        message: "You need to taken the first-dose before second-dose",
+      });
     } else if (
       user?.vaccinationStatus === "first-dose" &&
       doseType === "first-dose"
@@ -52,9 +50,8 @@ export const regVaccineSlot = async (req: Request, res: Response) => {
           const timeSlot: ITimeSlot | undefined = vaccineSlot.slots.find(
             (slot) => slot.time === time
           );
-          const AvailableDose: ITimeSlot | undefined | string = vaccineSlot.slots.find(
-            (slot) => slot.dose === dose
-          )
+          const AvailableDose: ITimeSlot | undefined | string =
+            vaccineSlot.slots.find((slot) => slot.dose === dose);
           if (timeSlot && timeSlot.available_doses > 0 && AvailableDose) {
             // Available doses are greater than 0
             return true;
@@ -68,7 +65,11 @@ export const regVaccineSlot = async (req: Request, res: Response) => {
       }
     }
 
-    const doseAvailable = await checkAvailableSlot(parsedDate, timeSlot, doseType);
+    const doseAvailable = await checkAvailableSlot(
+      parsedDate,
+      timeSlot,
+      doseType
+    );
 
     if (!doseAvailable) {
       return res.status(404).json({ message: "Sorry no dose available" });
@@ -104,12 +105,12 @@ export const regVaccineSlot = async (req: Request, res: Response) => {
     );
 
     // Update the user's vaccination status
-    if (user && doseType === 'first-dose') {
-        user.vaccinationStatus = 'first-dose';
-      } else if (user && doseType === 'second-dose') {
-        user.vaccinationStatus = 'completed';
-      }
-      await user?.save();
+    if (user && doseType === "first-dose") {
+      user.vaccinationStatus = "first-dose";
+    } else if (user && doseType === "second-dose") {
+      user.vaccinationStatus = "completed";
+    }
+    await user?.save();
     return res.json({ message: "Slot registered successfully" });
   } catch (error) {
     console.log(error);
