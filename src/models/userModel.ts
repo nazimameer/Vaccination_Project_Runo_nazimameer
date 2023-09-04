@@ -19,6 +19,18 @@ export interface IUser extends Document {
   registeredSlot: Array<ISlot>;
 }
 
+const slotSchema = new Schema<ISlot>(
+  {
+    date: Date,
+    dose: String,
+    timeSlot: String,
+    status: String,
+  },
+  {
+    timestamps: true, // Apply timestamps to ISlot schema
+  }
+);
+
 const userSchema = new Schema<IUser>({
   name: String,
   phoneNumber: String,
@@ -27,16 +39,7 @@ const userSchema = new Schema<IUser>({
   aadharNo: Number,
   password: String,
   vaccinationStatus: String,
-  registeredSlot: [
-    {
-      date: Date,
-      dose: String,
-      timeSlot: String,
-      status: String,
-    },{
-      timestamps: true
-    }
-  ],
+  registeredSlot: [slotSchema],
 });
 
 const Users: Model<IUser> = mongoose.model<IUser>("User", userSchema);
