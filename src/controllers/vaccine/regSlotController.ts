@@ -3,7 +3,6 @@ import Users from "../../models/userModel";
 import VaccineSlotModel, {
   ITimeSlot,
   IVaccineSlot,
-  RegisteredUser,
 } from "../../models/vaccineSlotModel";
 
 export const regVaccineSlot = async (req: Request, res: Response) => {
