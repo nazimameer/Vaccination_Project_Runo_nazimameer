@@ -32,7 +32,9 @@ const userSchema = new Schema<IUser>({
       dose: String,
       timeSlot: String,
       status: String,
-    },
+    },{
+      timestamps: true
+    }
   ],
 });
 
