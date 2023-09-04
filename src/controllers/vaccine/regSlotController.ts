@@ -18,10 +18,14 @@ export const regVaccineSlot = async (req: Request, res: Response) => {
 
     // Check if user selected correct doseType or not
     const user = await Users.findOne({ phoneNumber });
-    if (user?.vaccinationStatus === doseType) {
+    if (user?.vaccinationStatus === "completed") {
       return res
         .status(400)
-        .json({ message: `You already completed the ${doseType}` });
+        .json({ message: `You already completed all vaccination` });
+    }else if(user?.vaccinationStatus === "" && doseType === 'second-dose' ){
+        return res.status(400).json({ message: "You need to taken the first-dose before second-dose" })
+    }else if(user?.vaccinationStatus === "first-dose" && doseType === 'first-dose'){
+        return res.status(400).json({ message: "You already taken first-dose vaccination"})
     }
     // Define a function to check available doses for a specific date and time
     async function checkAvailableSlot(
