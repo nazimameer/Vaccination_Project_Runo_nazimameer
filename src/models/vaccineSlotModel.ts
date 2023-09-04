@@ -25,6 +25,7 @@ const timeSlotSchema = new Schema<ITimeSlot>({
   available_doses: Number,
   registered_users: [
     {
+      _id: mongoose.Types.ObjectId,
       phoneNumber: String,
       time: String,
       dose: String,

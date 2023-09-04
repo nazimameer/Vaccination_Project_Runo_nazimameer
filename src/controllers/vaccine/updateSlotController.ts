@@ -6,13 +6,14 @@ import mongoose from "mongoose";
 export const updateVaccineSlot = async (req: Request, res: Response) => {
 
     try {
-        const { date, slotId, newTimeSlot } = req.body;
+        const { slotId, newTimeSlot } = req.body;
         // Ensure all required data is provided in the request body
-    if ( !date ||!slotId || !newTimeSlot ) {
+    if ( !slotId || !newTimeSlot ) {
         return res.status(400).json({ message: 'Incomplete data' });
       }
-      const parsedDate = `${date}T00:00:00Z`
-      const parsedSlotId = new mongoose.Types.ObjectId(slotId);
+    //   const parsedDate = `${date}T00:00:00Z`
+    const parsedSlotId = new mongoose.Types.ObjectId(slotId);
+      
       const phoneNumber = req.user?.phoneNumber;
       const user = await Users.findOne({phoneNumber});
       if (!user) {
@@ -21,7 +22,7 @@ export const updateVaccineSlot = async (req: Request, res: Response) => {
 
        // Find the registered slot by slot ID
     // const registeredSlot = await VaccineSlotModel.findOne(
-    //     {
+    //     { 
     //         date:parsedDate,
     //         'slots.registered_users._id': parsedSlotId
     //     });
@@ -29,16 +30,27 @@ export const updateVaccineSlot = async (req: Request, res: Response) => {
         {
             phoneNumber,
             'registeredSlot._id': parsedSlotId,
-        },
-        {
-            'registeredSlot.$': 1, // Retrieve only the matched subdocument
         })
+        let parsedDate = "";
+        let matchedSubdocument;
+        if(userRegisteredSlot){
+            matchedSubdocument =  userRegisteredSlot?.registeredSlot.find((slot) => slot._id.toString() == parsedSlotId.toString());
+
+            if(matchedSubdocument){
+                parsedDate = matchedSubdocument.date;
+            }else{
+                return res.status(404).json({ message: "Slot not found"})
+            }
+        }else {
+            return res.status(400).json({ message: "Document not found"})
+        }
+        
         let is24hr: boolean = false;
         if (userRegisteredSlot) {
-            const matchedRegisteredSlot = user.registeredSlot[0]; // Access the first (and only) matched subdocument
+            
             const twentyFourHoursAgo = new Date();
             twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
-            is24hr = matchedRegisteredSlot?.updatedAt >= twentyFourHoursAgo;
+            is24hr = matchedSubdocument?.updatedAt >= twentyFourHoursAgo;
           } else {
             // No user document found with the provided _id
             console.log('No matching user document found.');
@@ -91,9 +103,11 @@ export const updateVaccineSlot = async (req: Request, res: Response) => {
                 $set: { 'registeredSlot.$.timeSlot': newTimeSlot },
               },
              )
+              
+             return res.status(200).json({ message: "slot updated successfully"})
          }else {
             return res.status(400).json({ message: "new time slote is not available"})
-         }
+         } 
 
     } catch (error) {
         console.log(error);

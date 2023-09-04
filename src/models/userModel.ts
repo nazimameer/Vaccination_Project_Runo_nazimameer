@@ -1,6 +1,7 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 
 interface ISlot {
+  _id: mongoose.Types.ObjectId;
   date: string;
   dose: string;
   timeSlot: string;
