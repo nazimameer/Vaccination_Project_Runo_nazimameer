@@ -21,11 +21,8 @@ export const regVaccineSlot = async (req: Request, res: Response) => {
         const slotDetails: IRegSlot = {
             date: new Date(date), // Replace with the actual date
             dose: "first", // Replace with the dose information
-            timeSlot: "10:00 AM", // Replace with the actual time slot
+            timeSlot: "10:00 AM - 10:30 AM", // Replace with the actual time slot
           };
-
-
-        
 
     } catch (error) {
         console.log(error);
