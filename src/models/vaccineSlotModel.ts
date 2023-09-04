@@ -14,7 +14,7 @@ export interface ITimeSlot extends Document {
 }
 
 export interface IVaccineSlot extends Document {
-  date: Date;
+  date: string;
   slots: ITimeSlot[];
 }
 
@@ -33,7 +33,7 @@ const timeSlotSchema = new Schema<ITimeSlot>({
 });
 
 const vaccineSlotSchema = new Schema<IVaccineSlot>({
-  date: Date,
+  date: String,
   slots: [timeSlotSchema],
 });
 

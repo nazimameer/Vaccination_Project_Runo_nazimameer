@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import VaccineSlotModel, { IVaccineSlot } from "../../models/vaccineSlotModel";
 import Users, { IUser } from "../../models/userModel";
+import mongoose from "mongoose";
 
 // Define constants for dose statuses to improve code readability
 const DOSE_STATUS = {
@@ -22,7 +23,7 @@ export const getAvailableSlot = async (req: Request, res: Response) => {
     if (!date || typeof date !== "string") {
       return handleError(res, 400, "Date is required");
     }
-    const parsedDate = new Date(date);
+    const parsedDate = `${date}T00:00:00Z`
     const phoneNumber: any = req.user?.phoneNumber;
 
     // Find the user based on the phone number
@@ -56,10 +57,11 @@ export const getAvailableSlot = async (req: Request, res: Response) => {
 
     // Helper function to get vaccine slots
     async function getVaccineSlot(
-      date: Date,
+      date: string,
       dose: string
     ): Promise<IVaccineSlot[]> {
       try {
+        console.log(parsedDate);
         const vaccineSlots: IVaccineSlot[] = await VaccineSlotModel.find({
           date,
           "slots.dose": dose,
