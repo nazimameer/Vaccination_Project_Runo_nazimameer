@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import VaccineSlotModel, { IVaccineSlot } from "../../models/vaccineSlotModel";
+import VaccineSlotModel, { ITimeSlot, IVaccineSlot } from "../../models/vaccineSlotModel";
 import Users from "../../models/userModel";
 import mongoose from "mongoose";
 
@@ -51,32 +51,52 @@ export const updateVaccineSlot = async (req: Request, res: Response) => {
 
           // Check if new time slot is available or not
 
-          async function getVaccineSlot(
-            date: Date,
-            dose: string
-          ): Promise<IVaccineSlot[]> {
+          async function checkAvailableSlot(
+            date: string,
+            time: string,
+          ): Promise<boolean> {
             try {
-              const vaccineSlots: IVaccineSlot[] = await VaccineSlotModel.find({
-                date,
-                "slots.dose": dose,
-              }).exec();
-              return vaccineSlots;
+              const vaccineSlot: IVaccineSlot | null = await VaccineSlotModel.findOne(
+                { date }
+              ).exec();
+              if (vaccineSlot) {
+                // Find the corresponding time slot
+                const timeSlot: ITimeSlot | undefined = vaccineSlot.slots.find(
+                  (slot) => slot.time === time
+                );
+                
+                if (timeSlot && timeSlot.available_doses > 0 ) {
+                  // Available doses are greater than 0
+                  return true;
+                }
+              }
+              // Either no matching slot found or available_doses <= 0
+              return false;
             } catch (error) {
-              throw error;
+              console.log(error);
+              return false;
             }
           }
 
+         const slotIsAvailable = await checkAvailableSlot(parsedDate, newTimeSlot);
+        
+         if(slotIsAvailable){
 
-           await Users.findOneAndUpdate(
-            {
-                phoneNumber,
-                'registeredSlot._id': parsedSlotId,
-            }
-           )
-
-
+             await Users.findOneAndUpdate(
+              {
+                  phoneNumber,
+                  'registeredSlot._id': parsedSlotId,
+              },
+              {
+                $set: { 'registeredSlot.$.timeSlot': newTimeSlot },
+              },
+             )
+         }else {
+            return res.status(400).json({ message: "new time slote is not available"})
+         }
 
     } catch (error) {
-        
+        console.log(error);
+        return res.status(500).json({message: "Internal server error"});
     }
 }

@@ -1,7 +1,7 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 
 interface ISlot {
-  date: Date;
+  date: string;
   dose: string;
   timeSlot: string;
   status: string;
@@ -9,7 +9,7 @@ interface ISlot {
 }
 
 export interface IUser extends Document {
-  name: String;
+  name: string;
   phoneNumber: string;
   age: number;
   pincode: string;
@@ -21,7 +21,7 @@ export interface IUser extends Document {
 
 const slotSchema = new Schema<ISlot>(
   {
-    date: Date,
+    date: String,
     dose: String,
     timeSlot: String,
     status: String,
