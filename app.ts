@@ -12,9 +12,10 @@ app.use(express.urlencoded({ extended: true }));
 const server = http.createServer(app);
 
 const userRoutes = require("./src/routes/userRoutes");
+const adminRoutes = require("./src/routes/adminRoutes");
 
-app.use(userRoutes);
-
+app.use('/user', userRoutes);
+app.use('/adminRoutes', adminRoutes);
 dbconnect();
 
 const port = process.env.PORT || 8000;
