@@ -62,8 +62,8 @@ export const getAvailableSlot = async (req: Request, res: Response) => {
       try {
         const vaccineSlots: IVaccineSlot[] = await VaccineSlotModel.find({
           date,
-          dose,
-        });
+          "slots.dose": dose,
+        }).exec();
         return vaccineSlots;
       } catch (error) {
         throw error;
