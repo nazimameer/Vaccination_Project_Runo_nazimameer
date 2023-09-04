@@ -5,6 +5,7 @@ interface ISlot {
   dose: string;
   timeSlot: string;
   status: string;
+  updatedAt: Date;
 }
 
 export interface IUser extends Document {
