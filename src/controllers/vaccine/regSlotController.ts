@@ -18,18 +18,29 @@ export const regVaccineSlot = async (req: Request, res: Response) => {
             return res.status(400).json({message: `You already completed the ${doseType}` })
         }
 
-        const slotDetails: IRegSlot = {
+        const slotDetails = {
             phoneNumber: phoneNumber || "",
             date: new Date(date), // Replace with the actual date
-            dose: "first", // Replace with the dose information
-            timeSlot: "10:00 AM - 10:30 AM", // Replace with the actual time slot
+            dose: doseType, // Replace with the dose information
+            timeSlot: timeSlot, // Replace with the actual time slot
           };
+        const slotDetails2 = {
+            date: new Date(date),
+            dose: doseType,
+            timeSlot: timeSlot,
+            status: "Pending",
+        } 
 
           // Create a new vaccine slot document
           const newSlot = new regSlotModel(slotDetails);
-          newSlot.save()
+          await newSlot.save()
+          await Users.findByIdAndUpdate(phoneNumber, {
+            $push:{ registeredSlot: slotDetails2 }
+          },
+          { new: true })
 
     } catch (error) {
         console.log(error);
+        return res.status(500).json({ message: "Registration unsuccessful"});
     }
 }
