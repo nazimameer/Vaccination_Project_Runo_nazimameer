@@ -5,6 +5,7 @@ interface ISlot {
   dose: string;
   timeSlot: string;
   status: string;
+  updatedAt: Date;
 }
 
 export interface IUser extends Document {
@@ -18,6 +19,18 @@ export interface IUser extends Document {
   registeredSlot: Array<ISlot>;
 }
 
+const slotSchema = new Schema<ISlot>(
+  {
+    date: Date,
+    dose: String,
+    timeSlot: String,
+    status: String,
+  },
+  {
+    timestamps: true, // Apply timestamps to ISlot schema
+  }
+);
+
 const userSchema = new Schema<IUser>({
   name: String,
   phoneNumber: String,
@@ -29,16 +42,7 @@ const userSchema = new Schema<IUser>({
     type:String,
     default:""
   },
-  registeredSlot: [
-    {
-      date: Date,
-      dose: String,
-      timeSlot: String,
-      status: String,
-    },{
-      timestamps: true
-    }
-  ],
+  registeredSlot: [slotSchema],
 });
 
 const Users: Model<IUser> = mongoose.model<IUser>("User", userSchema);
