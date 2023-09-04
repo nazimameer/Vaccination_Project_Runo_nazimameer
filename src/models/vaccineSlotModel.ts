@@ -21,7 +21,6 @@ const timeSlotSchema = new Schema<ITimeSlot>({
       phoneNumber: String,
       time: String,
       dose: String,
-      available_doses: Number,
     },
   ],
 });
