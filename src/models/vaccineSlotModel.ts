@@ -4,6 +4,7 @@ export interface RegisteredUser extends Document {
   phoneNumber: string;
   time: string;
   dose: string;
+  status: string;
 }
 export interface ITimeSlot extends Document {
   time: string;
@@ -26,6 +27,7 @@ const timeSlotSchema = new Schema<ITimeSlot>({
       phoneNumber: String,
       time: String,
       dose: String,
+      status: String,
     },
   ],
 });
