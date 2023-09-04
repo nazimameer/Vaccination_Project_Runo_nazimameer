@@ -1,6 +1,7 @@
 import mongoose, { Document, Model, Schema, mongo } from "mongoose";
 
 export interface IRegSlot extends Document {
+phoneNumber: string;
 date: Date;
 dose: string;
 timeSlot: string;
@@ -8,10 +9,14 @@ isAvailable: boolean;
 }
 
 const regSlotSchema = new Schema<IRegSlot>({
+    phoneNumber: String,
     date: Date,
     dose: String,
     timeSlot: String,
-    isAvailable: Boolean,
+    isAvailable: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 

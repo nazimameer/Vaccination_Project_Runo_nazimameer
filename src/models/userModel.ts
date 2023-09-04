@@ -2,6 +2,7 @@ import mongoose, { Document, Model, Schema } from "mongoose";
 
 interface ISlot {
   date: Date;
+  dose: string;
   timeSlot: string;
   status: string;
 }
@@ -28,6 +29,7 @@ const userSchema = new Schema<IUser>({
   registeredSlot: [
     {
       date: Date,
+      dose: String,
       timeSlot: String,
       status: String,
       ref:'VaccineSlot'
