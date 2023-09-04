@@ -1,10 +1,15 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 
+export interface RegisteredUser extends Document {
+  phoneNumber: string;
+  time: string;
+  dose: string;
+}
 export interface ITimeSlot extends Document {
   time: string;
   dose: string;
   available_doses: number;
-  registered_users: { phoneNumber: string; time: string; dose: string; }[];
+  registered_users: RegisteredUser[];
 }
 
 export interface IVaccineSlot extends Document {
@@ -21,7 +26,6 @@ const timeSlotSchema = new Schema<ITimeSlot>({
       phoneNumber: String,
       time: String,
       dose: String,
-      available_doses: Number,
     },
   ],
 });
@@ -36,4 +40,4 @@ const VaccineSlotModel: Model<IVaccineSlot> = mongoose.model<IVaccineSlot>(
   vaccineSlotSchema
 );
 
-export default VaccineSlotModel
+export default VaccineSlotModel;
