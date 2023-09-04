@@ -25,7 +25,10 @@ const userSchema = new Schema<IUser>({
   pincode: String,
   aadharNo: Number,
   password: String,
-  vaccinationStatus: String,
+  vaccinationStatus: {
+    type:String,
+    default:""
+  },
   registeredSlot: [
     {
       date: Date,
