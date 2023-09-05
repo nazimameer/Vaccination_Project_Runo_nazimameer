@@ -1,3 +1,4 @@
 import { loginAdmin } from "./authController";
 import { fetchUsers } from "./fetchUsersController";
-export { loginAdmin, fetchUsers };
+import { fetchSlots } from "./registeredSlots";
+export { loginAdmin, fetchUsers, fetchSlots };

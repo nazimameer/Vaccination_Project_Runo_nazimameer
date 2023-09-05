@@ -16,6 +16,6 @@ export const fetchUsers = async (req: Request, res: Response) => {
     );
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Error logging in" });
+    return res.status(500).json({ message: "Error fetch data" });
   }
 };
